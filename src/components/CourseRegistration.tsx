@@ -21,8 +21,6 @@ import {
   Search,
   Filter,
   BookOpen,
-  Clock,
-  Users,
   Plus,
   Minus,
 } from "lucide-react";

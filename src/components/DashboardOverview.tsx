@@ -149,12 +149,12 @@ export function DashboardOverview({ onSectionChange }: DashboardOverviewProps) {
               <CardDescription>Common tasks and shortcuts</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-wrap gap-4">
                 {quickActions.map((action, index) => (
                   <Button
                     key={index}
                     variant="outline"
-                    className={`h-20 flex flex-col items-center justify-center gap-2 ${action.color}`}
+                    className={`h-20 flex flex-col flex-1 items-center justify-center gap-2 ${action.color}`}
                     onClick={action.action}
                   >
                     <action.icon className="h-5 w-5" />
