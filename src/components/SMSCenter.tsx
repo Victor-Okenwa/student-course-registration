@@ -1,12 +1,33 @@
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { Badge } from "./ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import { MessageSquare, Send, Inbox, Users, Phone, Clock, Check, CheckCheck } from "lucide-react";
+import {
+  MessageSquare,
+  Send,
+  Inbox,
+  Users,
+  Phone,
+  Clock,
+  Check,
+  CheckCheck,
+} from "lucide-react";
 
 interface SMSMessage {
   id: string;
@@ -14,99 +35,114 @@ interface SMSMessage {
   recipient: string;
   message: string;
   timestamp: string;
-  status: 'sent' | 'delivered' | 'read' | 'failed';
-  type: 'received' | 'sent';
-  category: 'academic' | 'administrative' | 'personal';
+  status: "sent" | "delivered" | "read" | "failed";
+  type: "received" | "sent";
+  category: "academic" | "administrative" | "personal";
 }
 
 export function SMSCenter() {
   const [messages, setMessages] = useState<SMSMessage[]>([
     {
-      id: '1',
-      sender: 'Registrar Office',
-      recipient: 'You',
-      message: 'Course registration deadline extended to January 25th. Complete your registration to avoid penalties.',
-      timestamp: '2024-01-15T14:30:00Z',
-      status: 'read',
-      type: 'received',
-      category: 'administrative'
+      id: "1",
+      sender: "Registrar Office",
+      recipient: "You",
+      message:
+        "Course registration deadline extended to January 25th. Complete your registration to avoid penalties.",
+      timestamp: "2024-01-15T14:30:00Z",
+      status: "read",
+      type: "received",
+      category: "administrative",
     },
     {
-      id: '2',
-      sender: 'You',
-      recipient: 'Dr. Johnson (Advisor)',
-      message: 'Good day sir, I would like to schedule a meeting to discuss my final year project proposal.',
-      timestamp: '2024-01-15T10:15:00Z',
-      status: 'delivered',
-      type: 'sent',
-      category: 'academic'
+      id: "2",
+      sender: "You",
+      recipient: "Dr. Johnson (Advisor)",
+      message:
+        "Good day sir, I would like to schedule a meeting to discuss my final year project proposal.",
+      timestamp: "2024-01-15T10:15:00Z",
+      status: "delivered",
+      type: "sent",
+      category: "academic",
     },
     {
-      id: '3',
-      sender: 'Academic Office',
-      recipient: 'You',
-      message: 'Your result for CSC 301 has been published. Login to your portal to view details.',
-      timestamp: '2024-01-14T16:45:00Z',
-      status: 'read',
-      type: 'received',
-      category: 'academic'
+      id: "3",
+      sender: "Academic Office",
+      recipient: "You",
+      message:
+        "Your result for CSC 301 has been published. Login to your portal to view details.",
+      timestamp: "2024-01-14T16:45:00Z",
+      status: "read",
+      type: "received",
+      category: "academic",
     },
     {
-      id: '4',
-      sender: 'You',
-      recipient: 'Finance Office',
-      message: 'I made a payment yesterday but it\'s not reflecting in my account. Payment reference: FEE2024001234',
-      timestamp: '2024-01-14T09:20:00Z',
-      status: 'read',
-      type: 'sent',
-      category: 'administrative'
+      id: "4",
+      sender: "You",
+      recipient: "Finance Office",
+      message:
+        "I made a payment yesterday but it's not reflecting in my account. Payment reference: FEE2024001234",
+      timestamp: "2024-01-14T09:20:00Z",
+      status: "read",
+      type: "sent",
+      category: "administrative",
     },
     {
-      id: '5',
-      sender: 'IT Support',
-      recipient: 'You',
-      message: 'System maintenance completed. Portal is now fully operational. Thank you for your patience.',
-      timestamp: '2024-01-13T06:00:00Z',
-      status: 'read',
-      type: 'received',
-      category: 'administrative'
-    }
+      id: "5",
+      sender: "IT Support",
+      recipient: "You",
+      message:
+        "System maintenance completed. Portal is now fully operational. Thank you for your patience.",
+      timestamp: "2024-01-13T06:00:00Z",
+      status: "read",
+      type: "received",
+      category: "administrative",
+    },
   ]);
 
   const [newMessage, setNewMessage] = useState({
-    recipient: '',
-    category: '',
-    message: ''
+    recipient: "",
+    category: "",
+    message: "",
   });
 
-  const [selectedFilter, setSelectedFilter] = useState<string>('all');
+  const [selectedFilter, setSelectedFilter] = useState<string>("all");
 
   const contacts = [
-    { id: 'registrar', name: 'Registrar Office', category: 'administrative' },
-    { id: 'academic', name: 'Academic Office', category: 'academic' },
-    { id: 'finance', name: 'Finance Office', category: 'administrative' },
-    { id: 'it-support', name: 'IT Support', category: 'administrative' },
-    { id: 'advisor', name: 'Dr. Johnson (Advisor)', category: 'academic' },
-    { id: 'hod', name: 'HOD Computer Science', category: 'academic' }
+    { id: "registrar", name: "Registrar Office", category: "administrative" },
+    { id: "academic", name: "Academic Office", category: "academic" },
+    { id: "finance", name: "Finance Office", category: "administrative" },
+    { id: "it-support", name: "IT Support", category: "administrative" },
+    { id: "advisor", name: "Dr. Johnson (Advisor)", category: "academic" },
+    { id: "hod", name: "HOD Computer Science", category: "academic" },
   ];
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'sent': return Check;
-      case 'delivered': return CheckCheck;
-      case 'read': return CheckCheck;
-      case 'failed': return MessageSquare;
-      default: return MessageSquare;
+      case "sent":
+        return Check;
+      case "delivered":
+        return CheckCheck;
+      case "read":
+        return CheckCheck;
+      case "failed":
+        return MessageSquare;
+      default:
+        return MessageSquare;
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'sent': return 'text-gray-500';
-      case 'delivered': return 'text-blue-500';
-      case 'read': return 'text-green-500';
-      case 'failed': return 'text-red-500';
-      default: return 'text-gray-500';
+      case "sent":
+        return "text-gray-500";
+      case "delivered":
+        return "text-blue-500";
+      case "read":
+        return "text-green-500";
+      case "failed":
+        return "text-red-500";
+      default:
+        return "text-gray-500";
     }
   };
 
@@ -114,35 +150,40 @@ export function SMSCenter() {
     if (newMessage.recipient && newMessage.message && newMessage.category) {
       const message: SMSMessage = {
         id: Date.now().toString(),
-        sender: 'You',
+        sender: "You",
         recipient: newMessage.recipient,
         message: newMessage.message,
         timestamp: new Date().toISOString(),
-        status: 'sent',
-        type: 'sent',
-        category: newMessage.category as 'academic' | 'administrative' | 'personal'
+        status: "sent",
+        type: "sent",
+        category: newMessage.category as
+          | "academic"
+          | "administrative"
+          | "personal",
       };
-      
+
       setMessages([message, ...messages]);
-      setNewMessage({ recipient: '', category: '', message: '' });
+      setNewMessage({ recipient: "", category: "", message: "" });
     }
   };
 
-  const filteredMessages = selectedFilter === 'all' 
-    ? messages 
-    : selectedFilter === 'received'
-    ? messages.filter(msg => msg.type === 'received')
-    : selectedFilter === 'sent'
-    ? messages.filter(msg => msg.type === 'sent')
-    : messages.filter(msg => msg.category === selectedFilter);
+  const filteredMessages =
+    selectedFilter === "all"
+      ? messages
+      : selectedFilter === "received"
+        ? messages.filter((msg) => msg.type === "received")
+        : selectedFilter === "sent"
+          ? messages.filter((msg) => msg.type === "sent")
+          : messages.filter((msg) => msg.category === selectedFilter);
 
   const formatTimestamp = (timestamp: string) => {
     const date = new Date(timestamp);
     const now = new Date();
-    const diffInHours = Math.abs(now.getTime() - date.getTime()) / (1000 * 60 * 60);
-    
+    const diffInHours =
+      Math.abs(now.getTime() - date.getTime()) / (1000 * 60 * 60);
+
     if (diffInHours < 1) {
-      return 'Just now';
+      return "Just now";
     } else if (diffInHours < 24) {
       return `${Math.floor(diffInHours)}h ago`;
     } else {
@@ -152,9 +193,10 @@ export function SMSCenter() {
 
   const messageStats = {
     total: messages.length,
-    received: messages.filter(m => m.type === 'received').length,
-    sent: messages.filter(m => m.type === 'sent').length,
-    unread: messages.filter(m => m.type === 'received' && m.status !== 'read').length
+    received: messages.filter((m) => m.type === "received").length,
+    sent: messages.filter((m) => m.type === "sent").length,
+    unread: messages.filter((m) => m.type === "received" && m.status !== "read")
+      .length,
   };
 
   return (
@@ -163,7 +205,9 @@ export function SMSCenter() {
         {/* Header */}
         <div className="mb-6">
           <h1 className="text-2xl font-semibold mb-2">SMS Center</h1>
-          <p className="text-muted-foreground">Send and receive messages with university departments</p>
+          <p className="text-muted-foreground">
+            Send and receive messages with university departments
+          </p>
         </div>
 
         {/* Message Stats */}
@@ -231,37 +275,45 @@ export function SMSCenter() {
               <CardContent className="pt-6">
                 <div className="flex gap-2 flex-wrap">
                   <Button
-                    variant={selectedFilter === 'all' ? 'default' : 'outline'}
+                    variant={selectedFilter === "all" ? "default" : "outline"}
                     size="sm"
-                    onClick={() => setSelectedFilter('all')}
+                    onClick={() => setSelectedFilter("all")}
                   >
                     All Messages
                   </Button>
                   <Button
-                    variant={selectedFilter === 'received' ? 'default' : 'outline'}
+                    variant={
+                      selectedFilter === "received" ? "default" : "outline"
+                    }
                     size="sm"
-                    onClick={() => setSelectedFilter('received')}
+                    onClick={() => setSelectedFilter("received")}
                   >
                     Received
                   </Button>
                   <Button
-                    variant={selectedFilter === 'sent' ? 'default' : 'outline'}
+                    variant={selectedFilter === "sent" ? "default" : "outline"}
                     size="sm"
-                    onClick={() => setSelectedFilter('sent')}
+                    onClick={() => setSelectedFilter("sent")}
                   >
                     Sent
                   </Button>
                   <Button
-                    variant={selectedFilter === 'academic' ? 'default' : 'outline'}
+                    variant={
+                      selectedFilter === "academic" ? "default" : "outline"
+                    }
                     size="sm"
-                    onClick={() => setSelectedFilter('academic')}
+                    onClick={() => setSelectedFilter("academic")}
                   >
                     Academic
                   </Button>
                   <Button
-                    variant={selectedFilter === 'administrative' ? 'default' : 'outline'}
+                    variant={
+                      selectedFilter === "administrative"
+                        ? "default"
+                        : "outline"
+                    }
                     size="sm"
-                    onClick={() => setSelectedFilter('administrative')}
+                    onClick={() => setSelectedFilter("administrative")}
                   >
                     Administrative
                   </Button>
@@ -288,15 +340,25 @@ export function SMSCenter() {
                     filteredMessages.map((message) => {
                       const StatusIcon = getStatusIcon(message.status);
                       return (
-                        <Card key={message.id} className={`hover:shadow-md transition-all ${
-                          message.type === 'received' && message.status !== 'read' ? 'border-l-4 border-l-primary bg-primary/5' : ''
-                        }`}>
+                        <Card
+                          key={message.id}
+                          className={`hover:shadow-md transition-all ${
+                            message.type === "received" &&
+                            message.status !== "read"
+                              ? "border-l-4 border-l-primary bg-primary/5"
+                              : ""
+                          }`}
+                        >
                           <CardContent className="pt-4">
                             <div className="flex items-start gap-4">
-                              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                                message.type === 'received' ? 'bg-blue-100' : 'bg-green-100'
-                              }`}>
-                                {message.type === 'received' ? (
+                              <div
+                                className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                                  message.type === "received"
+                                    ? "bg-blue-100"
+                                    : "bg-green-100"
+                                }`}
+                              >
+                                {message.type === "received" ? (
                                   <Inbox className="w-4 h-4 text-blue-600" />
                                 ) : (
                                   <Send className="w-4 h-4 text-green-600" />
@@ -306,9 +368,14 @@ export function SMSCenter() {
                                 <div className="flex items-center justify-between mb-2">
                                   <div className="flex items-center gap-2">
                                     <p className="font-medium">
-                                      {message.type === 'received' ? message.sender : `To: ${message.recipient}`}
+                                      {message.type === "received"
+                                        ? message.sender
+                                        : `To: ${message.recipient}`}
                                     </p>
-                                    <Badge variant="outline" className="text-xs capitalize">
+                                    <Badge
+                                      variant="outline"
+                                      className="text-xs capitalize"
+                                    >
                                       {message.category}
                                     </Badge>
                                   </div>
@@ -316,15 +383,17 @@ export function SMSCenter() {
                                     <span className="text-xs text-muted-foreground">
                                       {formatTimestamp(message.timestamp)}
                                     </span>
-                                    {message.type === 'sent' && (
-                                      <StatusIcon className={`w-4 h-4 ${getStatusColor(message.status)}`} />
+                                    {message.type === "sent" && (
+                                      <StatusIcon
+                                        className={`w-4 h-4 ${getStatusColor(message.status)}`}
+                                      />
                                     )}
                                   </div>
                                 </div>
                                 <p className="text-sm text-muted-foreground line-clamp-2">
                                   {message.message}
                                 </p>
-                                {message.type === 'sent' && (
+                                {message.type === "sent" && (
                                   <p className="text-xs text-muted-foreground mt-1 capitalize">
                                     Status: {message.status}
                                   </p>
@@ -345,13 +414,22 @@ export function SMSCenter() {
             <Card>
               <CardHeader>
                 <CardTitle>Compose New Message</CardTitle>
-                <CardDescription>Send a message to university departments or staff</CardDescription>
+                <CardDescription>
+                  Send a message to university departments or staff
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Recipient</label>
-                    <Select value={newMessage.recipient} onValueChange={(value) => setNewMessage({ ...newMessage, recipient: value })}>
+                    <label className="text-sm font-medium mb-2 block">
+                      Recipient
+                    </label>
+                    <Select
+                      value={newMessage.recipient}
+                      onValueChange={(value) =>
+                        setNewMessage({ ...newMessage, recipient: value })
+                      }
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Select recipient" />
                       </SelectTrigger>
@@ -366,14 +444,23 @@ export function SMSCenter() {
                   </div>
 
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Category</label>
-                    <Select value={newMessage.category} onValueChange={(value) => setNewMessage({ ...newMessage, category: value })}>
+                    <label className="text-sm font-medium mb-2 block">
+                      Category
+                    </label>
+                    <Select
+                      value={newMessage.category}
+                      onValueChange={(value) =>
+                        setNewMessage({ ...newMessage, category: value })
+                      }
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="academic">Academic</SelectItem>
-                        <SelectItem value="administrative">Administrative</SelectItem>
+                        <SelectItem value="administrative">
+                          Administrative
+                        </SelectItem>
                         <SelectItem value="personal">Personal</SelectItem>
                       </SelectContent>
                     </Select>
@@ -381,11 +468,15 @@ export function SMSCenter() {
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Message</label>
+                  <label className="text-sm font-medium mb-2 block">
+                    Message
+                  </label>
                   <Textarea
                     placeholder="Type your message here..."
                     value={newMessage.message}
-                    onChange={(e) => setNewMessage({ ...newMessage, message: e.target.value })}
+                    onChange={(e) =>
+                      setNewMessage({ ...newMessage, message: e.target.value })
+                    }
                     rows={6}
                   />
                   <p className="text-xs text-muted-foreground mt-1">
@@ -394,17 +485,27 @@ export function SMSCenter() {
                 </div>
 
                 <div className="flex gap-2">
-                  <Button 
+                  <Button
                     onClick={sendMessage}
-                    disabled={!newMessage.recipient || !newMessage.message || !newMessage.category}
+                    disabled={
+                      !newMessage.recipient ||
+                      !newMessage.message ||
+                      !newMessage.category
+                    }
                     className="gap-2"
                   >
                     <Send className="w-4 h-4" />
                     Send Message
                   </Button>
-                  <Button 
-                    variant="outline" 
-                    onClick={() => setNewMessage({ recipient: '', category: '', message: '' })}
+                  <Button
+                    variant="outline"
+                    onClick={() =>
+                      setNewMessage({
+                        recipient: "",
+                        category: "",
+                        message: "",
+                      })
+                    }
                   >
                     Clear
                   </Button>
@@ -416,27 +517,43 @@ export function SMSCenter() {
             <Card>
               <CardHeader>
                 <CardTitle>Quick Contacts</CardTitle>
-                <CardDescription>Frequently contacted departments and staff</CardDescription>
+                <CardDescription>
+                  Frequently contacted departments and staff
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {contacts.map((contact) => (
-                    <Card key={contact.id} className="hover:shadow-md transition-shadow cursor-pointer">
+                    <Card
+                      key={contact.id}
+                      className="hover:shadow-md transition-shadow cursor-pointer"
+                    >
                       <CardContent className="pt-4">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
                             <Users className="w-4 h-4 text-primary" />
                           </div>
                           <div className="flex-1">
-                            <p className="font-medium text-sm">{contact.name}</p>
-                            <Badge variant="outline" className="text-xs capitalize">
+                            <p className="font-medium text-sm">
+                              {contact.name}
+                            </p>
+                            <Badge
+                              variant="outline"
+                              className="text-xs capitalize"
+                            >
                               {contact.category}
                             </Badge>
                           </div>
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => setNewMessage({ ...newMessage, recipient: contact.name, category: contact.category })}
+                            onClick={() =>
+                              setNewMessage({
+                                ...newMessage,
+                                recipient: contact.name,
+                                category: contact.category,
+                              })
+                            }
                           >
                             <MessageSquare className="w-4 h-4" />
                           </Button>

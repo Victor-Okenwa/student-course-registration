@@ -5,21 +5,29 @@ import { CourseRegistration } from "./components/CourseRegistration";
 import { ResultCalculator } from "./components/ResultCalculator";
 import { NotificationCenter } from "./components/NotificationCenter";
 import { SMSCenter } from "./components/SMSCenter";
+import LoginForm from "./components/LoginForm";
 
+export type PageNames =
+  | "login"
+  | "dashboard"
+  | "registration"
+  | "results"
+  | "notifications"
+  | "messages";
 export default function App() {
-  const [activeSection, setActiveSection] = useState('dashboard');
+  const [activeSection, setActiveSection] = useState<PageNames>("login");
 
   const renderContent = () => {
     switch (activeSection) {
-      case 'dashboard':
+      case "dashboard":
         return <DashboardOverview onSectionChange={setActiveSection} />;
-      case 'registration':
+      case "registration":
         return <CourseRegistration />;
-      case 'results':
+      case "results":
         return <ResultCalculator />;
-      case 'notifications':
+      case "notifications":
         return <NotificationCenter />;
-      case 'messages':
+      case "messages":
         return <SMSCenter />;
       default:
         return <DashboardOverview onSectionChange={setActiveSection} />;
@@ -28,9 +36,16 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-background">
-      <DashboardLayout activeSection={activeSection} onSectionChange={setActiveSection}>
-        {renderContent()}
-      </DashboardLayout>
+      {activeSection !== "login" ? (
+        <DashboardLayout
+          activeSection={activeSection}
+          onSectionChange={setActiveSection}
+        >
+          {renderContent()}
+        </DashboardLayout>
+      ) : (
+        <LoginForm onSectionChange={setActiveSection} />
+      )}
     </div>
   );
 }
