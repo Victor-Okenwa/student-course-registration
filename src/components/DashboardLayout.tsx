@@ -24,7 +24,19 @@ import { Badge } from "./ui/badge";
 import IMTLogo from "../assets/imt-logo.svg";
 import UNNLogo from "../assets/unn-logo.svg";
 import type { PageNames } from "@/App";
-import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from "./ui/sidebar";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+  SidebarTrigger,
+} from "./ui/sidebar";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -74,7 +86,10 @@ export function DashboardLayout({
                         {item.label}
                       </SidebarMenuButton>
                       {item.id === "notifications" && (
-                        <Badge variant="destructive" className="rounded-full text-[10px] absolute top-0 px-1.5">
+                        <Badge
+                          variant="destructive"
+                          className="rounded-full text-[10px] absolute top-0 px-1.5"
+                        >
                           3
                         </Badge>
                       )}

@@ -17,13 +17,7 @@ import {
 } from "./ui/select";
 import { Badge } from "./ui/badge";
 import { Checkbox } from "./ui/checkbox";
-import {
-  Search,
-  Filter,
-  BookOpen,
-  Plus,
-  Minus,
-} from "lucide-react";
+import { Search, Filter, BookOpen, Plus, Minus } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 
 export function CourseRegistration() {

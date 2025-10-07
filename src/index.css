@@ -126,3 +126,22 @@
     @apply bg-background text-foreground font-lexend;
   }
 }
+
+@layer utilities {
+  .moving-grid {
+    background-image:
+      linear-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 0, 0, 0.1) 0.7px, transparent 1px);
+    background-size: 120px 120px;
+    animation: moveGrid 20s linear infinite;
+  }
+}
+
+@keyframes moveGrid {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 290px 260px;
+  }
+}
