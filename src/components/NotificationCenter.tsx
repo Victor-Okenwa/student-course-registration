@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
@@ -13,6 +13,8 @@ import {
   Mail,
   Settings,
 } from "lucide-react";
+import * as api from "@/lib/api";
+import { toast } from "sonner";
 
 interface Notification {
   id: string;
@@ -97,6 +99,31 @@ export function NotificationCenter() {
 
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
+  // Load notifications from backend if logged in
+  useEffect(() => {
+    const token = typeof localStorage !== "undefined" ? localStorage.getItem("token") : null;
+    if (!token) return; // stay with local samples when logged out
+    api
+      .fetchMyNotifications()
+      .then((items) => {
+        // Map API items to local interface shape (ids as strings for consistency here)
+        const mapped: Notification[] = items.map((n) => ({
+          id: String(n.id),
+          title: n.title,
+          message: n.message,
+          type: (n.type as any) || "info",
+          category: (n.category as any) || "system",
+          timestamp: n.createdAt,
+          read: n.read,
+          priority: (n.priority as any) || "low",
+        }));
+        setNotifications(mapped);
+      })
+      .catch(() => {
+        // keep sample data on failure
+      });
+  }, []);
+
   const getNotificationIcon = (type: string) => {
     switch (type) {
       case "success":
@@ -134,12 +161,16 @@ export function NotificationCenter() {
     }
   };
 
-  const markAsRead = (id: string) => {
-    setNotifications(
-      notifications.map((notif) =>
-        notif.id === id ? { ...notif, read: true } : notif,
-      ),
-    );
+  const markAsRead = async (id: string) => {
+    try {
+      const token = typeof localStorage !== "undefined" ? localStorage.getItem("token") : null;
+      if (token) {
+        await api.markNotificationRead(Number(id));
+      }
+      setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
+    } catch (e) {
+      toast.error("Failed to mark as read");
+    }
   };
 
   const markAsUnread = (id: string) => {

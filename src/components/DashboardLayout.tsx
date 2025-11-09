@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Bell,
   BookOpen,
@@ -49,17 +49,51 @@ export function DashboardLayout({
   activeSection,
   onSectionChange,
 }: DashboardLayoutProps) {
+  const user = useMemo(() => {
+    try {
+      const raw = typeof localStorage !== "undefined" ? localStorage.getItem("user") : null;
+      if (!raw) return undefined;
+      const parsed = JSON.parse(raw);
+      return parsed as { name: string; role: string } | undefined;
+    } catch {
+      return undefined;
+    }
+  }, []);
+
+  const userRole = user?.role;
+
+  const [unreadCount, setUnreadCount] = useState<number>(0);
+  useEffect(() => {
+    let mounted = true;
+    const token = typeof localStorage !== "undefined" ? localStorage.getItem("token") : null;
+    if (!token) return;
+    import("@/lib/api").then((api) => {
+      api
+        .fetchMyNotifications()
+        .then((items) => {
+          if (!mounted) return;
+          const count = items.filter((n) => !n.read).length;
+          setUnreadCount(count);
+        })
+        .catch(() => {});
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   const navItems = [
     { id: "dashboard", label: "Dashboard", icon: Home },
     { id: "registration", label: "Course Registration", icon: BookOpen },
     { id: "results", label: "Results & Calculator", icon: Calculator },
     { id: "notifications", label: "Notifications", icon: Bell },
     { id: "messages", label: "SMS Center", icon: MessageSquare },
+    ...(userRole === "ADMIN" ? ([{ id: "admin", label: "Admin", icon: Settings }] as const) : ([] as const)),
   ];
 
   return (
     <SidebarProvider>
-      <div className="flex h-screen bg-background">
+      <div className="flex w-screen h-screen bg-background">
         {/* Sidebar */}
         <Sidebar collapsible="offcanvas" className="border-r">
           {/* Logo/Header */}
@@ -85,12 +119,12 @@ export function DashboardLayout({
                         <item.icon className="w-4 h-4" />
                         {item.label}
                       </SidebarMenuButton>
-                      {item.id === "notifications" && (
+                      {item.id === "notifications" && unreadCount > 0 && (
                         <Badge
                           variant="destructive"
                           className="rounded-full text-[10px] absolute top-0 px-1.5"
                         >
-                          3
+                          {unreadCount}
                         </Badge>
                       )}
                     </SidebarMenuItem>
@@ -108,8 +142,8 @@ export function DashboardLayout({
                 <AvatarFallback>NO</AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
-                <p className="font-medium truncate">Nnaemena Onyekachi</p>
-                <p className="text-sm text-muted-foreground">Level 400</p>
+                <p className="font-medium truncate">{user?.name ?? "User"}</p>
+                <p className="text-sm text-muted-foreground">{userRole ?? "GUEST"}</p>
               </div>
             </div>
             <div className="flex gap-2">
@@ -133,9 +167,7 @@ export function DashboardLayout({
                   </DialogHeader>
 
                   <DialogFooter>
-                    <Button asChild>
-                      <a href="/">Yes</a>
-                    </Button>
+                    <Button onClick={() => { localStorage.removeItem("token"); localStorage.removeItem("user"); onSectionChange("login"); }}>Yes</Button>
                     <DialogClose asChild>
                       <Button variant="outline">No</Button>
                     </DialogClose>

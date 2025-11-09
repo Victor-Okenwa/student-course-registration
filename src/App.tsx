@@ -1,4 +1,5 @@
 import { useState, lazy, Suspense } from "react";
+import { Toaster } from "./components/ui/sonner";
 
 // dynamic (lazy) imports - map named exports to default where needed
 const DashboardLayout = lazy(() =>
@@ -29,6 +30,11 @@ const NotificationCenter = lazy(() =>
 const SMSCenter = lazy(() =>
   import("./components/SMSCenter").then((m) => ({ default: m.SMSCenter })),
 );
+const AdminDashboard = lazy(() =>
+  import("./components/AdminDashboard").then((m) => ({
+    default: m.AdminDashboard,
+  })),
+);
 const LoginForm = lazy(() => import("./components/LoginForm"));
 // ...existing code...
 
@@ -38,7 +44,8 @@ export type PageNames =
   | "registration"
   | "results"
   | "notifications"
-  | "messages";
+  | "messages"
+  | "admin";
 export default function App() {
   const [activeSection, setActiveSection] = useState<PageNames>("login");
 
@@ -54,6 +61,8 @@ export default function App() {
         return <NotificationCenter />;
       case "messages":
         return <SMSCenter />;
+      case "admin":
+        return <AdminDashboard />;
       default:
         return <DashboardOverview onSectionChange={setActiveSection} />;
     }
@@ -73,6 +82,7 @@ export default function App() {
           <LoginForm onSectionChange={setActiveSection} />
         )}
       </Suspense>
+      <Toaster />
     </div>
   );
 }
