@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import {
   Card,
   CardContent,
@@ -18,64 +20,93 @@ import {
   MessageSquare,
 } from "lucide-react";
 import type { PageNames } from "@/App";
+import * as api from "../lib/api";
+import type { Enrollment } from "../lib/api";
 
 export interface DashboardOverviewProps {
   onSectionChange: (section: PageNames) => void;
 }
 
 export function DashboardOverview({ onSectionChange }: DashboardOverviewProps) {
+  // For now, we'll use a hardcoded student ID. In a real app, this would come from authentication
+  const currentUserId = 1; // TODO: Get from auth context
+
+  const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadEnrollments();
+  }, []);
+
+  const loadEnrollments = async () => {
+    setLoading(true);
+    try {
+      const data = await api.fetchUserEnrollments(currentUserId);
+      setEnrollments(data.filter((e) => e.status === "ENROLLED"));
+    } catch (error) {
+      toast.error("Failed to load enrollment data");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Calculate statistics from real data
+  const enrolledCourses = enrollments.length;
+  const totalCredits = enrollments.reduce((total, enrollment) => {
+    return total + (enrollment.section?.course?.credits || 0);
+  }, 0);
+
+  // For Nigerian system: Calculate progress (assuming 120 credits for degree)
+  const creditsEarned = 0; // This would come from completed courses with grades
+  const degreeProgress = Math.round((creditsEarned / 120) * 100);
+  const semesterProgress = Math.round((totalCredits / 24) * 100); // Assuming max 24 credits per semester
+
   const stats = [
     {
       title: "Enrolled Courses",
-      value: "12",
-      description: "Current semester",
+      value: String(enrolledCourses),
+      description: "Current enrollments",
       icon: BookOpen,
       color: "text-blue-600",
     },
     {
-      title: "Current GPA",
-      value: "3.67",
-      description: "Cumulative GPA",
+      title: "Total Credits",
+      value: String(totalCredits),
+      description: "This semester",
       icon: TrendingUp,
       color: "text-green-600",
     },
     {
       title: "Credits Earned",
-      value: "78",
+      value: String(creditsEarned),
       description: "Out of 120 required",
       icon: Award,
       color: "text-purple-600",
     },
     {
-      title: "Pending Results",
-      value: "3",
-      description: "Awaiting publication",
+      title: "Waitlisted",
+      value: String(
+        enrollments.filter((e) => e.status === "WAITLISTED").length
+      ),
+      description: "Courses waiting",
       icon: Clock,
       color: "text-orange-600",
     },
   ];
 
-  const recentCourses = [
-    { code: "CSC 301", title: "Database Systems", units: 3, status: "Ongoing" },
-    {
-      code: "CSC 305",
-      title: "Software Engineering",
-      units: 3,
-      status: "Ongoing",
-    },
-    {
-      code: "MTH 301",
-      title: "Mathematical Methods",
-      units: 2,
-      status: "Completed",
-    },
-    {
-      code: "STA 301",
-      title: "Applied Statistics",
-      units: 3,
-      status: "Ongoing",
-    },
-  ];
+  // Get current courses from enrollments
+  const currentCourses = enrollments
+    .filter((e) => e.status === "ENROLLED")
+    .map((enrollment) => ({
+      code: enrollment.section?.course?.code || "Unknown",
+      title: enrollment.section?.course?.title || "Unknown Course",
+      units: enrollment.section?.course?.credits || 0,
+      status: "Ongoing" as const,
+      room: enrollment.section?.room,
+      term: enrollment.section?.term?.name,
+    }))
+    .slice(0, 10); // Show up to 10 courses
 
   const quickActions = [
     {
@@ -180,20 +211,28 @@ export function DashboardOverview({ onSectionChange }: DashboardOverviewProps) {
               <div>
                 <div className="flex justify-between text-sm mb-2">
                   <span>Degree Progress</span>
-                  <span>65%</span>
+                  <span>{degreeProgress}%</span>
                 </div>
-                <Progress value={65} className="h-2" />
+                <Progress value={degreeProgress} className="h-2" />
+                <p className="text-xs text-muted-foreground mt-1">
+                  {creditsEarned} of 120 credits completed
+                </p>
               </div>
               <div>
                 <div className="flex justify-between text-sm mb-2">
                   <span>Current Semester</span>
-                  <span>12/15 Credits</span>
+                  <span>{totalCredits}/24 Credits</span>
                 </div>
-                <Progress value={80} className="h-2" />
+                <Progress value={semesterProgress} className="h-2" />
+                <p className="text-xs text-muted-foreground mt-1">
+                  {enrolledCourses} courses enrolled
+                </p>
               </div>
               <div className="pt-4 border-t">
                 <p className="text-sm text-muted-foreground">
-                  Expected Graduation: June 2025
+                  {totalCredits < 24
+                    ? `You can register for ${24 - totalCredits} more credits`
+                    : "Maximum credits reached for this semester"}
                 </p>
               </div>
             </CardContent>
@@ -209,36 +248,46 @@ export function DashboardOverview({ onSectionChange }: DashboardOverviewProps) {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {recentCourses.map((course, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between p-3 rounded-lg border"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                      <BookOpen className="w-4 h-4 text-primary" />
+            {loading ? (
+              <div className="text-center py-8 text-muted-foreground">Loading courses...</div>
+            ) : currentCourses.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                <p className="mb-4">No courses enrolled yet.</p>
+                <Button onClick={() => onSectionChange("registration")}>
+                  Register for Courses
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {currentCourses.map((course, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between p-3 rounded-lg border"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                        <BookOpen className="w-4 h-4 text-primary" />
+                      </div>
+                      <div>
+                        <p className="font-medium">{course.code}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {course.title}
+                        </p>
+                        {course.room && (
+                          <p className="text-xs text-muted-foreground">
+                            Room: {course.room} {course.term && `• ${course.term}`}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-medium">{course.code}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {course.title}
-                      </p>
+                    <div className="flex items-center gap-3">
+                      <Badge variant="secondary">{course.units} Credits</Badge>
+                      <Badge variant="outline">{course.status}</Badge>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <Badge variant="secondary">{course.units} Units</Badge>
-                    <Badge
-                      variant={
-                        course.status === "Completed" ? "default" : "outline"
-                      }
-                    >
-                      {course.status}
-                    </Badge>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

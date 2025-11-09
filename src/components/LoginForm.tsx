@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import type { DashboardOverviewProps } from "./DashboardOverview";
+import * as api from "@/lib/api";
+import { toast } from "sonner";
 
 // Define the Zod schema for the login form
 const loginSchema = z.object({
@@ -35,7 +37,7 @@ const loginSchema = z.object({
   password: z
     .string()
     .min(1, { message: "Password is required" })
-    .min(8, { message: "Password must be at least 8 characters" }), // Optional: Add min length for security
+    .min(5, { message: "Password must be at least 8 characters" }), // Optional: Add min length for security
 });
 
 // Infer the form types from the schema
@@ -51,10 +53,21 @@ const LoginForm = ({ onSectionChange }: DashboardOverviewProps) => {
     },
   });
 
-  const onSubmit = (data: LoginFormData) => {
-    console.log("Form submitted:", data);
-    onSectionChange("dashboard");
-    // Handle login logic here
+  const onSubmit = async (data: LoginFormData) => {
+    try {
+      const resp = await api.login(data.identifier, data.password);
+      localStorage.setItem("token", resp.token);
+      localStorage.setItem("user", JSON.stringify(resp.user));
+      toast.success("Logged in successfully");
+      if (resp.user.role === "ADMIN") {
+        onSectionChange("admin");
+      } else {
+        onSectionChange("dashboard");
+      }
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "Login failed";
+      toast.error(message);
+    }
   };
 
   return (
